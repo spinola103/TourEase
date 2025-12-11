@@ -9,8 +9,22 @@ export default function Contact() {
         message: ''
     });
 
+    const [formErrors, setFormErrors] = useState({
+        name: '',
+        email: '',
+        message: ''
+    });
+
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
+
+    const validateName = (name) => {
+        const nameRegex = /^[A-Za-z\s]+$/;
+        if (!nameRegex.test(name) && name !== '') {
+            return 'Name should contain only letters';
+        }
+        return '';
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -18,10 +32,34 @@ export default function Contact() {
             ...prev,
             [name]: value
         }));
+
+        // Validate name field
+        if (name === 'name') {
+            setFormErrors((prev) => ({
+                ...prev,
+                name: validateName(value)
+            }));
+        }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        
+        // Validate all required fields
+        const errors = {
+            name: validateName(formData.name) || (formData.name ? '' : 'Name is required'),
+            email: formData.email ? '' : 'Email is required',
+            message: formData.message ? '' : 'Message is required'
+        };
+
+        setFormErrors(errors);
+
+        // Check if there are any errors
+        const hasErrors = Object.values(errors).some(error => error !== '');
+        if (hasErrors) {
+            return;
+        }
+
         setLoading(true);
 
         // Simulate form submission
@@ -32,6 +70,11 @@ export default function Contact() {
                 name: '',
                 email: '',
                 subject: '',
+                message: ''
+            });
+            setFormErrors({
+                name: '',
+                email: '',
                 message: ''
             });
 
@@ -79,6 +122,9 @@ export default function Contact() {
                 {/* Contact Form */}
                 <div className="max-w-2xl mx-auto">
                     <h2 className="text-4xl font-bold mb-8 text-center">Send us a Message</h2>
+                    <p className="text-gray-600 mb-8 text-center">
+                        Fields marked with <span className="text-red-500">*</span> are required
+                    </p>
 
                     <form onSubmit={handleSubmit} className="bg-gray-50 p-8 rounded-xl">
                         {submitted && (
@@ -87,56 +133,94 @@ export default function Contact() {
                             </div>
                         )}
 
+                        {/* Name Field */}
                         <div className="mb-6">
-                            <label className="block text-sm font-semibold mb-2">Full Name</label>
+                            <label className="block text-sm font-semibold mb-2">
+                                Full Name <span className="text-red-500">*</span>
+                            </label>
                             <input
                                 type="text"
                                 name="name"
                                 value={formData.name}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-1 ${
+                                    formErrors.name 
+                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500' 
+                                    : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
+                                }`}
                                 placeholder="Your name"
+                                onKeyPress={(e) => {
+                                    // Prevent typing numbers
+                                    if (/\d/.test(e.key)) {
+                                        e.preventDefault();
+                                    }
+                                }}
                             />
+                            {formErrors.name && (
+                                <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>
+                            )}
                         </div>
 
+                        {/* Email Field */}
                         <div className="mb-6">
-                            <label className="block text-sm font-semibold mb-2">Email Address</label>
+                            <label className="block text-sm font-semibold mb-2">
+                                Email Address <span className="text-red-500">*</span>
+                            </label>
                             <input
                                 type="email"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-1 ${
+                                    formErrors.email 
+                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500' 
+                                    : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
+                                }`}
                                 placeholder="your.email@example.com"
                             />
+                            {formErrors.email && (
+                                <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>
+                            )}
                         </div>
 
+                        {/* Subject Field (Optional) */}
                         <div className="mb-6">
-                            <label className="block text-sm font-semibold mb-2">Subject</label>
+                            <label className="block text-sm font-semibold mb-2">
+                                Subject <span className="text-gray-400 text-xs">(Optional)</span>
+                            </label>
                             <input
                                 type="text"
                                 name="subject"
                                 value={formData.subject}
                                 onChange={handleChange}
-                                required
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
                                 placeholder="How can we help?"
                             />
                         </div>
 
+                        {/* Message Field */}
                         <div className="mb-8">
-                            <label className="block text-sm font-semibold mb-2">Message</label>
+                            <label className="block text-sm font-semibold mb-2">
+                                Message <span className="text-red-500">*</span>
+                            </label>
                             <textarea
                                 name="message"
                                 value={formData.message}
                                 onChange={handleChange}
                                 required
                                 rows="6"
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-1 ${
+                                    formErrors.message 
+                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500' 
+                                    : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
+                                }`}
                                 placeholder="Tell us more about your inquiry..."
                             />
+                            {formErrors.message && (
+                                <p className="text-red-500 text-sm mt-1">{formErrors.message}</p>
+                            )}
                         </div>
 
                         <button
