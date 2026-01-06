@@ -1,71 +1,67 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Heart, Sun, Moon } from 'lucide-react';
-import { useFavorites } from '../hooks/useFavorites';
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Menu, X, Heart, Sun, Moon } from "lucide-react";
+import { useFavorites } from "../hooks/useFavorites";
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState("light");
 
   const location = useLocation();
   const navigate = useNavigate();
   const { favoriteIds } = useFavorites();
   const isLoggedIn = !!localStorage.getItem("token");
+
   const navItems = [
-    { path: '/', label: 'Home' },
-    { path: '/about', label: 'About' },
-    { path: '/destinations', label: 'Explore' },
-    { path: '/contact', label: 'Contact' },
+    { path: "/", label: "Home" },
+    { path: "/about", label: "About" },
+    { path: "/destinations", label: "Explore" },
+    { path: "/contact", label: "Contact" },
   ];
 
   const isActive = (path) => location.pathname === path;
 
-  // Logo click → home + scroll top
   const handleLogoClick = () => {
-    navigate('/');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigate("/");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
   const handleLogout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        navigate("/login", { replace: true });
-    };
-  /* ---------------- THEME LOGIC ---------------- */
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login", { replace: true });
+  };
 
-  
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
 
-    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+    const initialTheme = savedTheme || (prefersDark ? "dark" : "light");
     setTheme(initialTheme);
     applyTheme(initialTheme);
   }, []);
 
-  // Apply theme to html
   const applyTheme = (mode) => {
-    if (mode === 'dark') {
-      document.documentElement.classList.add('dark');
+    if (mode === "dark") {
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove("dark");
     }
-    localStorage.setItem('theme', mode);
+    localStorage.setItem("theme", mode);
   };
 
-  // Toggle theme
   const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    const newTheme = theme === "dark" ? "light" : "dark";
     setTheme(newTheme);
     applyTheme(newTheme);
   };
-
-  /* ------------------------------------------------ */
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-
           {/* LOGO */}
           <span
             onClick={handleLogoClick}
@@ -82,27 +78,25 @@ export default function Navigation() {
                 to={item.path}
                 className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                   isActive(item.path)
-                    ? 'bg-teal-500 dark:bg-indigo-600 text-white'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    ? "bg-teal-500 dark:bg-indigo-600 text-white"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`}
               >
                 {item.label}
               </Link>
             ))}
-
-            {/* Favorites */}
             <Link
               to="/favorites"
-              className={`px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition ${
-                isActive('/favorites')
-                  ? 'bg-teal-500 dark:bg-indigo-600 text-white'
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+              className={`relative px-4 pr-12 py-2 rounded-lg font-semibold flex items-center gap-2 transition ${
+                isActive("/favorites")
+                  ? "bg-teal-500 dark:bg-indigo-600 text-white"
+                  : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
               }`}
             >
               <Heart className="w-5 h-5" />
               Favorites
               {favoriteIds.length > 0 && (
-                <span className="ml-1 bg-red-500 text-white text-xs px-2 rounded-full">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 bg-red-500 text-white text-xs px-2 h-5 min-w-[1.75rem] rounded-full inline-flex items-center justify-center">
                   {favoriteIds.length}
                 </span>
               )}
@@ -111,7 +105,6 @@ export default function Navigation() {
 
           {/* RIGHT ACTIONS */}
           <div className="flex items-center gap-3">
-
             {/* THEME TOGGLE */}
             <button
               onClick={toggleTheme}
@@ -123,7 +116,7 @@ export default function Navigation() {
               "
               title="Toggle theme"
             >
-              {theme === 'dark' ? (
+              {theme === "dark" ? (
                 <Sun className="w-5 h-5 text-yellow-400 transition-transform duration-500 rotate-0" />
               ) : (
                 <Moon className="w-5 h-5 text-gray-700 transition-transform duration-500" />
@@ -132,22 +125,22 @@ export default function Navigation() {
 
             {/* CTA */}
             {!isLoggedIn ? (
-                            <Link
-                                to="/login"
-                                className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-semibold transition"
-                            >
-                                Get Started
-                            </Link>
-                        ) : (
-                            <button
-                                onClick={handleLogout}
-                                className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold transition"
-                            >
-                                Logout
-                            </button>
-                        )}
+              <Link
+                to="/login"
+                className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-semibold transition"
+              >
+                Get Started
+              </Link>
+            ) : (
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold transition"
+              >
+                Logout
+              </button>
+            )}
 
-            {/* MOBILE MENU */}
+            {/* MOBILE MENU BUTTON */}
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition"
@@ -167,33 +160,33 @@ export default function Navigation() {
                 onClick={() => setIsOpen(false)}
                 className={`block px-4 py-2 rounded-lg font-semibold transition ${
                   isActive(item.path)
-                    ? 'bg-teal-500 dark:bg-indigo-600 text-white'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    ? "bg-teal-500 dark:bg-indigo-600 text-white"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`}
               >
                 {item.label}
               </Link>
             ))}
 
-             {!isLoggedIn ? (
-                            <Link
-                                to="/login"
-                                className="block w-full bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-semibold transition text-center"
-                                onClick={() => setIsOpen(false)}
-                            >
-                                Get Started
-                            </Link>
-                        ) : (
-                            <button
-                                onClick={() => {
-                                    setIsOpen(false);
-                                    handleLogout();
-                                }}
-                                className="block w-full bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold transition text-center"
-                            >
-                                Logout
-                            </button>
-                        )}
+            {!isLoggedIn ? (
+              <Link
+                to="/login"
+                className="block w-full bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-semibold transition text-center"
+                onClick={() => setIsOpen(false)}
+              >
+                Get Started
+              </Link>
+            ) : (
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  handleLogout();
+                }}
+                className="block w-full bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold transition text-center"
+              >
+                Logout
+              </button>
+            )}
           </div>
         )}
       </div>
