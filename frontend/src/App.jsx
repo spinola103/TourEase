@@ -21,6 +21,7 @@ import Login from "./pages/Login";
 import AddFavorite from "./pages/AddFavorite";
 import ScrollToTopButton from "./components/common/ScrollToTop";
 import DestinationDetails from "./pages/DestinationDetails";
+import PlanTrip from "./pages/PlanTrip";
 import OAuthSuccess from "./pages/OAuthSuccess";
 import NotFound from "./components/NotFound";
 
@@ -61,7 +62,8 @@ function AppRoutes() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/favorites" element={<AddFavorite />} />
-          <Route path="/destinations/:id" element={<DestinationDetails />} />
+          <Route path="/destination/:id" element={<DestinationDetails />} />
+          <Route path="/plan-trip" element={<PlanTrip />} />
           <Route path="/oauth-success" element={<OAuthSuccess />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
