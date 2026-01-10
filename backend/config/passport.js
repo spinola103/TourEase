@@ -38,7 +38,15 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.
     )
   );
 } else {
-  console.warn("Google OAuth not configured. Set GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET and GOOGLE_CALLBACK_URL to enable it.");
+  const missing = [
+    !process.env.GOOGLE_CLIENT_ID && 'GOOGLE_CLIENT_ID',
+    !process.env.GOOGLE_CLIENT_SECRET && 'GOOGLE_CLIENT_SECRET',
+    !process.env.GOOGLE_CALLBACK_URL && 'GOOGLE_CALLBACK_URL',
+  ].filter(Boolean);
+
+  console.warn(
+    `Google OAuth not configured. Missing env var(s): ${missing.join(', ')}. Add them to enable Google OAuth or leave unset to disable.`
+  );
 }
 
 module.exports = passport;
