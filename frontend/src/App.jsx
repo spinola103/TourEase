@@ -62,7 +62,8 @@ function AppRoutes() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/favorites" element={<AddFavorite />} />
-          <Route path="/destination/:id" element={<DestinationDetails />} />
+         <Route path="/destinations/:id" element={<DestinationDetails />} />
+
           <Route path="/plan-trip" element={<PlanTrip />} />
           <Route path="/oauth-success" element={<OAuthSuccess />} />
           <Route path="*" element={<NotFound />} />

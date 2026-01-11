@@ -1,46 +1,46 @@
-import React, { useMemo, useState } from 'react';
-import { MapPin, Star, Heart, Clock, Users, TrendingUp, Search } from 'lucide-react';
-import { useFavorites } from '../hooks/useFavorites';
-import { destinations } from '../utils/destinationsData';
+import React, { useMemo, useState } from "react";
+import { MapPin, Star, Heart, Clock, TrendingUp, Search } from "lucide-react";
+import { useFavorites } from "../hooks/useFavorites";
+import { destinations } from "../utils/destinationsData";
+import { useNavigate } from "react-router-dom";
 
 export default function Destinations() {
     const { toggleFavorite, isFavorite } = useFavorites();
-    const [activeFilter, setActiveFilter] = useState('All Destinations');
-    const [searchQuery, setSearchQuery] = useState('');
+    const [activeFilter, setActiveFilter] = useState("All Destinations");
+    const [searchQuery, setSearchQuery] = useState("");
 
     const filters = [
-        { label: 'All Destinations', keywords: [] },
-        { label: 'Budget Friendly', keywords: ['budget'] },
-        { label: 'Luxury', keywords: ['luxury'] },
-        { label: 'Beach', keywords: ['beach'] },
-        { label: 'Mountains', keywords: ['mountain'] },
-        { label: 'Cultural', keywords: ['culture', 'history', 'art', 'museum'] },
+        { label: "All Destinations", keywords: [] },
+        { label: "Budget Friendly", keywords: ["budget"] },
+        { label: "Luxury", keywords: ["luxury"] },
+        { label: "Beach", keywords: ["beach"] },
+        { label: "Mountains", keywords: ["mountain"] },
+        { label: "Cultural", keywords: ["culture", "history", "art", "museum"] },
     ];
 
     const filtered = useMemo(() => {
         let result = destinations;
-        
-        // Apply category filter
-        if (activeFilter !== 'All Destinations') {
+
+        if (activeFilter !== "All Destinations") {
             const f = filters.find((x) => x.label === activeFilter);
             if (f && f.keywords.length) {
                 result = result.filter((d) => {
-                    const bestFor = (d.bestFor || '').toLowerCase();
+                    const bestFor = (d.bestFor || "").toLowerCase();
                     return f.keywords.some((kw) => bestFor.includes(kw));
                 });
             }
         }
-        
-        // Apply search filter
+
         if (searchQuery.trim()) {
             const query = searchQuery.toLowerCase();
-            result = result.filter((d) => 
-                d.name.toLowerCase().includes(query) ||
-                (d.bestFor || '').toLowerCase().includes(query) ||
-                (d.season || '').toLowerCase().includes(query)
+            result = result.filter(
+                (d) =>
+                    d.name.toLowerCase().includes(query) ||
+                    (d.bestFor || "").toLowerCase().includes(query) ||
+                    (d.season || "").toLowerCase().includes(query)
             );
         }
-        
+
         return result;
     }, [activeFilter, searchQuery]);
 
@@ -49,7 +49,9 @@ export default function Destinations() {
             {/* Hero Section */}
             <div className="relative bg-gradient-to-br from-teal-400 via-teal-500 to-cyan-600 text-white py-20 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-5xl md:text-6xl font-bold mb-6">Explore Destinations</h1>
+                    <h1 className="text-5xl md:text-6xl font-bold mb-6">
+                        Explore Destinations
+                    </h1>
                     <p className="text-xl md:text-2xl opacity-90 max-w-3xl">
                         Discover amazing places around the world, carefully curated for every type of traveler.
                     </p>
@@ -121,11 +123,10 @@ function FilterButton({ label, active, onClick }) {
         <button
             type="button"
             onClick={onClick}
-            className={`px-6 py-2 rounded-full font-semibold transition border ${
-                active
-                    ? 'bg-teal-500 text-white border-teal-500 dark:bg-teal-500 dark:text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300 border-transparent dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700'
-            }`}
+            className={`px-6 py-2 rounded-full font-semibold transition border ${active
+                    ? "bg-teal-500 text-white border-teal-500 dark:bg-teal-500 dark:text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300 border-transparent dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                }`}
         >
             {label}
         </button>
@@ -133,25 +134,33 @@ function FilterButton({ label, active, onClick }) {
 }
 
 function DestinationCard({ destination, isFavorite, onToggleFavorite }) {
+    const navigate = useNavigate();
+
     return (
-        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm hover:shadow-xl transition-all overflow-hidden group cursor-pointer border border-gray-100 dark:border-slate-800">
+        <div
+            onClick={() => navigate(`/destinations/${destination.id}`)}
+            className="bg-white dark:bg-slate-900 rounded-xl shadow-sm hover:shadow-xl transition-all overflow-hidden group cursor-pointer border border-gray-100 dark:border-slate-800"
+        >
             {/* Image */}
             <div
                 className="h-48 relative overflow-hidden bg-cover bg-center"
                 style={{ backgroundImage: `url(${destination.image})` }}
             >
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition" />
+
                 <button
-                    onClick={onToggleFavorite}
                     type="button"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onToggleFavorite();
+                    }}
                     className="absolute top-4 right-4 bg-white dark:bg-slate-900 rounded-full p-2 hover:bg-gray-100 dark:hover:bg-slate-800 transition z-10 shadow-md"
                 >
                     <Heart
-                        className={`w-6 h-6 transition ${
-                            isFavorite
-                                ? 'fill-red-500 text-red-500'
-                                : 'text-gray-600 dark:text-slate-200'
-                        }`}
+                        className={`w-6 h-6 transition ${isFavorite
+                                ? "fill-red-500 text-red-500"
+                                : "text-gray-600 dark:text-slate-200"
+                            }`}
                     />
                 </button>
             </div>
@@ -184,7 +193,14 @@ function DestinationCard({ destination, isFavorite, onToggleFavorite }) {
                     </div>
                 </div>
 
-                <button className="w-full bg-teal-500 hover:bg-teal-600 text-white py-2 rounded-lg font-semibold transition dark:bg-teal-500 dark:hover:bg-teal-400">
+                <button
+                    type="button"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/destinations/${destination.id}`);
+                    }}
+                    className="w-full bg-teal-500 hover:bg-teal-600 text-white py-2 rounded-lg font-semibold transition dark:bg-teal-500 dark:hover:bg-teal-400"
+                >
                     Explore
                 </button>
             </div>
