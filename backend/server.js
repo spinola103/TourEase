@@ -5,7 +5,7 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const contactRoutes = require('./routes/contactRoutes');
-
+const tripRouter = require('./routes/tripRoutes')
 
 // Connect to MongoDB
 connectDB()
@@ -49,6 +49,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/trip',tripRouter)
 
 // Health check route
 app.get('/api/health', (req, res) => {

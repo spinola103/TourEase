@@ -17,6 +17,7 @@ export default function Navigation() {
     { path: "/about", label: "About" },
     { path: "/destinations", label: "Explore" },
     { path: "/contact", label: "Contact" },
+    { path: "/trip-planner", label: "Trip Planner" },
   ];
 
   const isActive = (path) => location.pathname === path;

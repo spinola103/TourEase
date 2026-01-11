@@ -24,6 +24,7 @@ import DestinationDetails from "./pages/DestinationDetails";
 import PlanTrip from "./pages/PlanTrip";
 import OAuthSuccess from "./pages/OAuthSuccess";
 import NotFound from "./components/NotFound";
+import TripPlanner from './pages/TripPlanner';
 
 function ProtectedRoute({ children }) {
   const isAuthenticated = Boolean(localStorage.getItem("token"));
@@ -67,6 +68,7 @@ function AppRoutes() {
           <Route path="/plan-trip" element={<PlanTrip />} />
           <Route path="/oauth-success" element={<OAuthSuccess />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/trip-planner" element={<TripPlanner />} />
         </Routes>
       </div>
     </>
