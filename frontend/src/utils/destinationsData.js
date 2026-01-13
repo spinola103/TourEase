@@ -149,5 +149,79 @@ export const destinations = [
       "London Eye",
       "Buckingham Palace"
     ]
+  },
+  {
+    id: 9,
+    name: "Swiss Alps, Switzerland",
+    image: "https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=80&w=1600",
+    rating: 4.9,
+    reviews: 5200,
+    bestFor: "Mountains, Skiing, Luxury, Nature",
+    season: "Dec–Mar (Ski) / Jun–Sep (Hike)",
+    cost: "$$$",
+    overview:
+      "The Swiss Alps offer some of the most dramatic mountain scenery in the world. From the iconic Matterhorn to the luxury resort towns of St. Moritz and Zermatt, this is the ultimate destination for winter sports and summer hiking.",
+    highlights: [
+      "Skiing in Zermatt",
+      "Glacier Express Train",
+      "Matterhorn View",
+      "Hiking Eiger Trail"
+    ]
+  },
+
+  {
+    id: 10,
+    name: "Banff National Park, Canada",
+    image: "https://images.unsplash.com/photo-1503614472-8c93d56e92ce?q=80&w=1600",
+    rating: 4.8,
+    reviews: 4100,
+    bestFor: "Mountains, Hiking, Nature, Adventure",
+    season: "June–August",
+    cost: "$$",
+    overview:
+      "Banff National Park is Canada's oldest national park, nestled in the heart of the Rocky Mountains. Known for its turquoise glacial lakes, such as Lake Louise and Moraine Lake, it offers endless outdoor adventures.",
+    highlights: [
+      "Lake Louise Canoe",
+      "Moraine Lake Sunrise",
+      "Icefields Parkway Drive",
+      "Banff Upper Hot Springs"
+    ]
+  },
+  {
+    id: 11,
+    name: "Machu Picchu, Peru",
+    image: "https://images.unsplash.com/photo-1526392060635-9d6019884377?q=80&w=1600",
+    rating: 4.9,
+    reviews: 6500,
+    bestFor: "Mountains, History, Culture, Hiking",
+    season: "May–October",
+    cost: "$$",
+    overview:
+      "Set high in the Andes Mountains, Machu Picchu is an Incan citadel recognized as one of the New Seven Wonders of the World. The trek to reach it is as breathtaking as the ruins themselves.",
+    highlights: [
+      "Inca Trail Trek",
+      "Sunrise at Sun Gate",
+      "Huayna Picchu Climb",
+      "Sacred Valley Tour"
+    ]
+  },
+
+  {
+    id: 12,
+    name: "Mount Fuji, Japan",
+    image: "https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?q=80&w=1600",
+    rating: 4.8,
+    reviews: 3400,
+    bestFor: "Mountains, Nature, Culture, Photography",
+    season: "July–September (Climbing)",
+    cost: "$$",
+    overview:
+      "Mount Fuji is Japan's tallest peak and an active volcano revered as a sacred symbol. Whether viewed from afar during cherry blossom season or climbed during the summer, it is an awe-inspiring sight.",
+    highlights: [
+      "Sunrise from Summit",
+      "Lake Kawaguchiko",
+      "Chureito Pagoda View",
+      "Gotemba Premium Outlets"
+    ]
   }
 ];
