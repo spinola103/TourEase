@@ -39,6 +39,10 @@ export default function TripPlanner() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState('');
   const [generatedPlan, setGeneratedPlan] = useState(null);
+  const [previousPlan, setPreviousPlan] = useState(null);
+  const [refinementInput, setRefinementInput] = useState("");
+  const [isRefining, setIsRefining] = useState(false);
+
 
   const interests = [
     { id: 'adventure', label: 'Adventure', icon: Mountain },
@@ -63,38 +67,86 @@ export default function TripPlanner() {
     setError('');
 
     try {
-      const response = await fetch("http://localhost:3000/api/trip/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          destination: formData.destination,
-          startDate: formData.startDate,
-          endDate: formData.endDate,
-          travelers: formData.travelers,
-          budget: formData.budget,
-          interests: formData.interests,
-          accommodation: formData.accommodation
-        })
-      });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 25000); // 25s timeout
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to generate trip');
-      }
+  const response = await fetch("http://localhost:5000/api/trip/generate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      destination: formData.destination,
+      startDate: formData.startDate,
+      endDate: formData.endDate,
+      travelers: formData.travelers,
+      budget: formData.budget,
+      interests: formData.interests,
+      accommodation: formData.accommodation,
+    }),
+    signal: controller.signal,
+  });
 
-      const data = await response.json();
-      setGeneratedPlan(data.plan);
-      setStep(3);
+  clearTimeout(timeoutId);
 
-    } catch (err) {
-      setError(err.message || 'Failed to generate trip. Please try again.');
-      console.error('Error:', err);
-    } finally {
-      setIsGenerating(false);
-    }
+  if (!response.ok) {
+    let errorMessage = "Failed to generate trip";
+    try {
+      const errorData = await response.json();
+      errorMessage = errorData.error || errorMessage;
+    } catch (_) {}
+    throw new Error(errorMessage);
+  }
+
+  const data = await response.json();
+
+  if (!data.plan || data.plan.trim().length === 0) {
+    throw new Error("AI returned an empty itinerary");
+  }
+
+  setGeneratedPlan(data.plan);
+} catch (err) {
+  if (err.name === "AbortError") {
+    setError("AI took too long. Please try again.");
+  } else {
+    setError(err.message || "Failed to generate trip. Please try again.");
+  }
+  console.error("Error:", err);
+} finally {
+  setIsGenerating(false);
+}
   };
+  const handleRefine = async () => {
+  if (!refinementInput.trim()) return;
+
+  setIsRefining(true);
+
+  try {
+    const response = await fetch("http://localhost:5000/api/trip/refine", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        originalPlan: generatedPlan,
+        refinementPrompt: refinementInput,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!data.updatedPlan || data.updatedPlan.trim().length === 0) {
+      throw new Error("No refined itinerary returned");
+    }
+
+    setPreviousPlan(generatedPlan);     // store old version
+    setGeneratedPlan(data.updatedPlan); // replace with new one
+    setRefinementInput("");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to refine itinerary");
+  } finally {
+    setIsRefining(false);
+  }
+};
 
   const handleStartOver = () => {
     setGeneratedPlan(null);
@@ -167,6 +219,17 @@ export default function TripPlanner() {
             </div>
           </div>
 
+          {previousPlan && (
+            <div className="mb-8 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 p-4 rounded-xl">
+              <p className="font-bold mb-2 text-yellow-800 dark:text-yellow-300">
+                Previous Version
+              </p>
+            <pre className="text-sm whitespace-pre-wrap text-gray-700 dark:text-gray-300">
+            {previousPlan}
+           </pre>
+           </div>
+          )}
+
           {/* AI Generated Itinerary */}
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-xl border border-gray-100 dark:border-gray-800 mb-8">
             <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-6 flex items-center">
@@ -180,6 +243,33 @@ export default function TripPlanner() {
               </div>
             </div>
           </div>
+         {/* Refinement Section */}
+          <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-800 mb-8">
+            <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">
+             Refine Your Itinerary
+            </h3>
+
+          <textarea
+           value={refinementInput}
+           onChange={(e) => setRefinementInput(e.target.value)}
+           placeholder="e.g. Make it more budget friendly, add local food spots, reduce travel time..."
+           rows={3}
+           className="w-full p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 mb-4 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all outline-none"
+          />
+
+        <button
+         onClick={handleRefine}
+         disabled={isRefining}
+         className={`px-6 py-3 rounded-xl font-bold text-white transition-all ${
+         isRefining
+        ? "bg-gray-400 cursor-not-allowed"
+        : "bg-teal-500 hover:bg-teal-600"
+        }`}
+      >
+     {isRefining ? "Refining..." : "Refine Itinerary"}
+  </button>
+</div>
+
 
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-4 justify-center">
@@ -649,7 +739,7 @@ export default function TripPlanner() {
           <div className="flex items-center justify-center gap-6 text-sm text-gray-500 dark:text-gray-400">
             <span>© 2026 AI Trip Planner</span>
             <span>•</span>
-            <span>Powered by Claude AI</span>
+            <span>Powered by AI</span>
           </div>
         </div>
       </footer>
